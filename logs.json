@@ -1,0 +1,33 @@
+[
+    {
+        "id": "chatcmpl-ASAoK5LNGqHDk2c84a7sWYzWSpZRI",
+        "object": "chat.completion",
+        "created": 1731278104,
+        "model": "gpt-4o-mini-2024-07-18",
+        "choices": [
+            {
+                "index": 0,
+                "message": {
+                    "role": "assistant",
+                    "content": "Thank you for asking! I don't have feelings or days like humans do, but I'm here and ready to help you with whatever you need. How can I assist you today?",
+                    "refusal": null
+                },
+                "logprobs": null,
+                "finish_reason": "stop"
+            }
+        ],
+        "usage": {
+            "prompt_tokens": 13,
+            "completion_tokens": 35,
+            "total_tokens": 48,
+            "prompt_tokens_details": { "cached_tokens": 0, "audio_tokens": 0 },
+            "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "audio_tokens": 0,
+                "accepted_prediction_tokens": 0,
+                "rejected_prediction_tokens": 0
+            }
+        },
+        "system_fingerprint": "fp_0ba0d124f1"
+    }
+]
