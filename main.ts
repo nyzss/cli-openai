@@ -1,10 +1,13 @@
 import {
+    brightBlue,
+    brightGreen,
     brightRed,
     brightYellow,
     green,
     red,
     yellow,
 } from "jsr:@std/fmt/colors";
+import { renderMarkdown } from "jsr:@littletof/charmd";
 
 Deno.addSignalListener("SIGINT", () => {
     console.error(green("✅ Goodbye!"));
@@ -30,12 +33,20 @@ const handleLogs = async () => {
         const parsedLogs = JSON.parse(decoded);
         logs.push(...parsedLogs);
     } catch (_) {
-        console.error(red("❌ Error reading logs"));
-        console.log(brightRed("🧹 Do you want to clear the logs? (y/n): "));
+        console.error(brightRed("❌ Error reading logs"));
+        console.log(brightBlue("🧹 Do you want to clear the logs? (y/n): "));
         const clearLogs = confirm("");
 
         if (clearLogs) {
-            await Deno.writeFile("logs.json", new TextEncoder().encode("[]"));
+            try {
+                await Deno.writeFile(
+                    "logs.json",
+                    new TextEncoder().encode("[]")
+                );
+                console.log(brightGreen("🧹 Logs cleared successfully!"));
+            } catch (_) {
+                console.log(brightRed("🚫 Error clearing logs, aborting..."));
+            }
         } else {
             console.log(
                 brightYellow("🚪 Exiting without clearing logs file...")
@@ -55,7 +66,7 @@ const pushToLogs = async (content: JSON | unknown) => {
 };
 
 const display = (content: string) => {
-    console.log(`\n🤖 ${content}\n`);
+    console.log(`\n🤖 ${renderMarkdown(content)}\n`);
 };
 
 const doRequest = async (content: string) => {
@@ -93,10 +104,12 @@ const doRequest = async (content: string) => {
                 display(data.choices[0].message.content);
             }
         } else {
-            console.log(red("❌ Error with the request, please try again."));
+            console.log(
+                brightRed("❌ Error with the request, please try again.")
+            );
         }
     } catch (_) {
-        console.log(red("❌ Error with the request, please try again."));
+        console.log(brightRed("❌ Error with the request, please try again."));
         newLog.response = { error: "Error with the request" };
         await pushToLogs(newLog);
     }
@@ -118,8 +131,8 @@ while (true) {
     } else {
         console.log(
             val || val === ""
-                ? red("❌ Please enter a prompt")
-                : red("❌ The prompt is too long")
+                ? brightRed("❌ Please enter a prompt")
+                : brightRed("❌ The prompt is too long")
         );
     }
 }
