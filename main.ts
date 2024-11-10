@@ -4,10 +4,11 @@ import {
     brightRed,
     brightYellow,
     green,
-    red,
     yellow,
 } from "jsr:@std/fmt/colors";
 import { renderMarkdown } from "jsr:@littletof/charmd";
+import { Spinner } from "jsr:@std/cli/unstable-spinner";
+import { exists } from "jsr:@std/fs";
 
 Deno.addSignalListener("SIGINT", () => {
     console.error(green("✅ Goodbye!"));
@@ -16,6 +17,8 @@ Deno.addSignalListener("SIGINT", () => {
 
 const logs: unknown[] = [];
 
+//TODO: Don't make this a completions but a chat/message
+//TODO: So that the history is preserved.
 const OPENAI_URL =
     Deno.env.get("OPENAI_URL") || "https://api.openai.com/v1/chat/completions";
 
@@ -27,6 +30,9 @@ if (!API_KEY) {
 const handleLogs = async () => {
     const decoder = new TextDecoder("utf-8");
     try {
+        if (!(await exists("logs.json"))) {
+            await Deno.writeFile("logs.json", new TextEncoder().encode("[]"));
+        }
         const file = await Deno.readFile("logs.json");
         const decoded = decoder.decode(file);
 
@@ -66,7 +72,12 @@ const pushToLogs = async (content: JSON | unknown) => {
 };
 
 const display = (content: string) => {
-    console.log(`\n🤖 ${renderMarkdown(content)}\n`);
+    // make the --- delimiter based on the size of the terminal
+    console.log(
+        `-------------------------------------\n🤖 - ${renderMarkdown(
+            content
+        )}\n\n`
+    );
 };
 
 const doRequest = async (content: string) => {
@@ -78,6 +89,9 @@ const doRequest = async (content: string) => {
     };
 
     try {
+        const spinner = new Spinner({ message: "Thinking...", color: "cyan" });
+        spinner.start();
+
         const res = await fetch(OPENAI_URL, {
             method: "POST",
             headers: {
@@ -92,6 +106,7 @@ const doRequest = async (content: string) => {
         });
 
         const data = await res.json();
+        spinner.stop();
 
         newLog.response = data;
         await pushToLogs(newLog);

@@ -2,8 +2,11 @@
   "version": "4",
   "specifiers": {
     "jsr:@littletof/charmd@*": "0.1.2",
+    "jsr:@std/cli@*": "1.0.6",
     "jsr:@std/fmt@*": "1.0.3",
-    "jsr:@std/fmt@0.223.0": "0.223.0"
+    "jsr:@std/fmt@0.223.0": "0.223.0",
+    "jsr:@std/fs@*": "1.0.5",
+    "jsr:@std/path@^1.0.7": "1.0.8"
   },
   "jsr": {
     "@littletof/charmd@0.1.2": {
@@ -12,11 +15,23 @@
         "jsr:@std/fmt@0.223.0"
       ]
     },
+    "@std/cli@1.0.6": {
+      "integrity": "d22d8b38c66c666d7ad1f2a66c5b122da1704f985d3c47f01129f05abb6c5d3d"
+    },
     "@std/fmt@0.223.0": {
       "integrity": "6deb37794127dfc7d7bded2586b9fc6f5d50e62a8134846608baf71ffc1a5208"
     },
     "@std/fmt@1.0.3": {
       "integrity": "97765c16aa32245ff4e2204ecf7d8562496a3cb8592340a80e7e554e0bb9149f"
+    },
+    "@std/fs@1.0.5": {
+      "integrity": "41806ad6823d0b5f275f9849a2640d87e4ef67c51ee1b8fb02426f55e02fd44e",
+      "dependencies": [
+        "jsr:@std/path"
+      ]
+    },
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     }
   },
   "workspace": {
