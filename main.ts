@@ -1,8 +1,19 @@
-import { green, red, yellow } from "jsr:@std/fmt/colors";
+import {
+    brightRed,
+    brightYellow,
+    green,
+    red,
+    yellow,
+} from "jsr:@std/fmt/colors";
+
+Deno.addSignalListener("SIGINT", () => {
+    console.error(green("✅ Goodbye!"));
+    Deno.exit(0);
+});
 
 const logs: unknown[] = [];
 
-const openaiURL =
+const OPENAI_URL =
     Deno.env.get("OPENAI_URL") || "https://api.openai.com/v1/chat/completions";
 
 const API_KEY = Deno.env.get("OPENAI_API_KEY");
@@ -19,8 +30,18 @@ const handleLogs = async () => {
         const parsedLogs = JSON.parse(decoded);
         logs.push(...parsedLogs);
     } catch (_) {
-        console.error(red("❌ Error reading logs, aborting..."));
-        Deno.exit(1);
+        console.error(red("❌ Error reading logs"));
+        console.log(brightRed("🧹 Do you want to clear the logs? (y/n): "));
+        const clearLogs = confirm("");
+
+        if (clearLogs) {
+            await Deno.writeFile("logs.json", new TextEncoder().encode("[]"));
+        } else {
+            console.log(
+                brightYellow("🚪 Exiting without clearing logs file...")
+            );
+            Deno.exit(1);
+        }
     }
 };
 await handleLogs();
@@ -46,7 +67,7 @@ const doRequest = async (content: string) => {
     };
 
     try {
-        const res = await fetch(openaiURL, {
+        const res = await fetch(OPENAI_URL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -61,8 +82,9 @@ const doRequest = async (content: string) => {
 
         const data = await res.json();
 
+        newLog.response = data;
+        await pushToLogs(newLog);
         if (res.ok) {
-            await pushToLogs(data);
             if (data.choices.length > 1) {
                 data.choices.forEach((choice: any) =>
                     display(choice.message.content)
@@ -75,6 +97,7 @@ const doRequest = async (content: string) => {
         }
     } catch (_) {
         console.log(red("❌ Error with the request, please try again."));
+        newLog.response = { error: "Error with the request" };
         await pushToLogs(newLog);
     }
 };
@@ -85,12 +108,13 @@ while (true) {
     console.log(promptString);
     const val = prompt("> ");
 
-    if (!val) {
-        console.log(green("✅ Goodbye!"));
+    if (val === null) {
         break;
     }
     if (val.length > 0 && val.length < 1000) {
         await doRequest(val);
+    } else if (val.length === 0) {
+        continue;
     } else {
         console.log(
             val || val === ""
@@ -99,3 +123,5 @@ while (true) {
         );
     }
 }
+
+console.log(green("✅ Goodbye!"));
