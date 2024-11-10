@@ -19,6 +19,10 @@ const logs: unknown[] = [];
 
 //TODO: Don't make this a completions but a chat/message
 //TODO: So that the history is preserved.
+
+//TODO: after more digging in the docs i found this: https://platform.openai.com/docs/guides/text-generation#building-prompts
+//TODO: from the logging, gather all messages with the "assistant" role, and add them to the 'messages' array when sending prompts
+
 const OPENAI_URL =
     Deno.env.get("OPENAI_URL") || "https://api.openai.com/v1/chat/completions";
 
