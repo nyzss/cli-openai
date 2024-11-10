@@ -23,6 +23,8 @@ const logs: unknown[] = [];
 //TODO: after more digging in the docs i found this: https://platform.openai.com/docs/guides/text-generation#building-prompts
 //TODO: from the logging, gather all messages with the "assistant" role, and add them to the 'messages' array when sending prompts
 
+//TODO: Use readline or another library to handle input, as `prompt()` is not very good.
+
 const OPENAI_URL =
     Deno.env.get("OPENAI_URL") || "https://api.openai.com/v1/chat/completions";
 
